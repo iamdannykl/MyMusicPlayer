@@ -11,3 +11,9 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+# DS_Store 文件（macOS 系统生成的隐藏文件）
+.DS_Store
+# bin 目录（编译生成的文件）
+/bin/
+# dmg 文件（macOS 系统生成的磁盘映像文件）
+*.dmg
