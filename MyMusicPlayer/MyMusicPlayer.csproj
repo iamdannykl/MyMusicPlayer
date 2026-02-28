@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.3.4" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.3.4" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.4" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.4" />
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.3.4">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="ManagedBass" Version="4.0.2" />
+        <PackageReference Include="ManagedBass.Fx" Version="4.0.2" />
+        <PackageReference Include="TagLibSharp" Version="2.3.0" />
+    </ItemGroup>
+
+    <!-- Copy native BASS dylibs to output directory -->
+    <ItemGroup>
+        <Content Include="NativeLibs/*.dylib">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Link>%(Filename)%(Extension)</Link>
+        </Content>
+    </ItemGroup>
+
+    <!-- After Release publish on macOS, auto-build the .app bundle -->
+    <Target Name="BuildMacAppBundle"
+            AfterTargets="Publish"
+            Condition="'$(Configuration)' == 'Release' AND $([MSBuild]::IsOSPlatform('OSX'))">
+        <Exec Command="bash &quot;$(MSBuildProjectDirectory)/../build_app.sh&quot;"
+              WorkingDirectory="$(MSBuildProjectDirectory)"/>
+    </Target>
+</Project>

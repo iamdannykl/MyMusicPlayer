@@ -1,0 +1,346 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:MyMusicPlayer.ViewModels"
+        xmlns:models="clr-namespace:MyMusicPlayer.Models"
+        mc:Ignorable="d"
+        x:Class="MyMusicPlayer.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="🎵 MyMusicPlayer"
+        Width="1000" Height="660"
+        MinWidth="800" MinHeight="560"
+        Background="#FF0F0F14"
+        FontFamily="PingFang SC, Microsoft YaHei, Segoe UI, sans-serif">
+
+  <Window.Resources>
+    <!-- Gradient brushes -->
+    <LinearGradientBrush x:Key="AccentGradient" StartPoint="0%,0%" EndPoint="100%,100%">
+      <GradientStop Color="#FF6B35F5" Offset="0"/>
+      <GradientStop Color="#FFAA35F5" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="CardGradient" StartPoint="0%,0%" EndPoint="100%,100%">
+      <GradientStop Color="#FF1A1A2E" Offset="0"/>
+      <GradientStop Color="#FF16213E" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="SidebarGradient" StartPoint="0%,0%" EndPoint="0%,100%">
+      <GradientStop Color="#FF12121C" Offset="0"/>
+      <GradientStop Color="#FF0A0A12" Offset="1"/>
+    </LinearGradientBrush>
+  </Window.Resources>
+
+  <Window.Styles>
+    <!-- Icon button style -->
+    <Style Selector="Button.icon">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="10,8"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Foreground" Value="#FFAAAACC"/>
+      <Setter Property="FontSize" Value="18"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.icon:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#22FFFFFF"/>
+    </Style>
+    <Style Selector="Button.icon:pressed /template/ ContentPresenter">
+      <Setter Property="Background" Value="#33FFFFFF"/>
+    </Style>
+
+    <!-- Play button style -->
+    <Style Selector="Button.play">
+      <Setter Property="Background" Value="{StaticResource AccentGradient}"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Width" Value="52"/>
+      <Setter Property="Height" Value="52"/>
+      <Setter Property="CornerRadius" Value="26"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="FontSize" Value="20"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Button.play:pointerover /template/ ContentPresenter">
+      <Setter Property="Opacity" Value="0.85"/>
+    </Style>
+
+    <!-- Action button -->
+    <Style Selector="Button.action">
+      <Setter Property="Background" Value="#22FFFFFF"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Foreground" Value="#FFCCCCEE"/>
+      <Setter Property="FontSize" Value="13"/>
+      <Setter Property="Padding" Value="14,8"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+    <Style Selector="Button.action:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#33FFFFFF"/>
+    </Style>
+
+    <!-- Track list item -->
+    <Style Selector="ListBoxItem">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Padding" Value="12,6"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Margin" Value="4,2"/>
+    </Style>
+    <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#1AFFFFFF"/>
+    </Style>
+    <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+      <Setter Property="Background" Value="#336B35F5"/>
+    </Style>
+
+    <!-- Slider -->
+    <Style Selector="Slider">
+      <Setter Property="Foreground" Value="#FF6B35F5"/>
+    </Style>
+    <Style Selector="Slider /template/ Track">
+      <Setter Property="Height" Value="4"/>
+    </Style>
+
+    <!-- TextBox search -->
+    <Style Selector="TextBox.search">
+      <Setter Property="Background" Value="#22FFFFFF"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="20"/>
+      <Setter Property="Padding" Value="14,8"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="FontSize" Value="13"/>
+      <Setter Property="CaretBrush" Value="White"/>
+    </Style>
+    <Style Selector="TextBox.search:focus /template/ Border#PART_BorderElement">
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+  </Window.Styles>
+
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="240"/>
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <!-- ═══ LEFT SIDEBAR ════════════════════════════════════════════════════ -->
+    <Border Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+            Background="{StaticResource SidebarGradient}"
+            BorderBrush="#22FFFFFF" BorderThickness="0,0,1,0">
+      <DockPanel>
+        <!-- Logo -->
+        <StackPanel DockPanel.Dock="Top" Margin="20,24,20,16">
+          <TextBlock Text="🎵 MyMusicPlayer"
+                     Foreground="White" FontSize="18" FontWeight="Bold"/>
+          <TextBlock Text="你的私人音乐空间"
+                     Foreground="#88AAAACC" FontSize="11" Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- Import buttons -->
+        <StackPanel DockPanel.Dock="Top" Margin="12,0,12,16" Spacing="8">
+          <Button Name="ImportFolderBtn" Classes="action" HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <TextBlock Text="📁" FontSize="14"/>
+              <TextBlock Text="导入文件夹" FontSize="13"/>
+            </StackPanel>
+          </Button>
+          <Button Name="ImportFileBtn" Classes="action" HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <TextBlock Text="🎵" FontSize="14"/>
+              <TextBlock Text="添加文件" FontSize="13"/>
+            </StackPanel>
+          </Button>
+          <Button Name="ClearBtn" Classes="action" HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <TextBlock Text="🗑" FontSize="14"/>
+              <TextBlock Text="清空列表" FontSize="13"/>
+            </StackPanel>
+          </Button>
+        </StackPanel>
+
+        <!-- Divider -->
+        <Border DockPanel.Dock="Top" Height="1" Background="#22FFFFFF" Margin="12,0,12,12"/>
+
+        <!-- Album art & track info at bottom -->
+        <Border DockPanel.Dock="Bottom" Margin="16,12,16,16">
+          <StackPanel Spacing="10">
+            <Border CornerRadius="12" ClipToBounds="True"
+                    Background="#22FFFFFF" Width="180" Height="180"
+                    HorizontalAlignment="Center">
+              <Panel>
+                <!-- Default art placeholder -->
+                <TextBlock Text="🎵" FontSize="72"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Foreground="#44FFFFFF"
+                           IsVisible="{Binding CurrentAlbumArt, Converter={x:Static ObjectConverters.IsNull}}"/>
+                <!-- Album art -->
+                <Image Source="{Binding CurrentAlbumArt}" Stretch="UniformToFill"
+                       IsVisible="{Binding CurrentAlbumArt, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+              </Panel>
+            </Border>
+            <StackPanel Spacing="3" HorizontalAlignment="Center">
+              <TextBlock Text="{Binding CurrentTitle}"
+                         Foreground="White" FontSize="14" FontWeight="SemiBold"
+                         MaxWidth="200" TextTrimming="CharacterEllipsis"
+                         HorizontalAlignment="Center" TextAlignment="Center"/>
+              <TextBlock Text="{Binding CurrentArtist}"
+                         Foreground="#88AAAACC" FontSize="12"
+                         MaxWidth="200" TextTrimming="CharacterEllipsis"
+                         HorizontalAlignment="Center" TextAlignment="Center"/>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <!-- Status -->
+        <TextBlock DockPanel.Dock="Bottom" Text="{Binding StatusText}"
+                   Foreground="#66AAAACC" FontSize="11"
+                   Margin="16,0,16,8" TextTrimming="CharacterEllipsis"/>
+
+        <!-- Loading bar -->
+        <ProgressBar DockPanel.Dock="Bottom" IsIndeterminate="True" Height="2"
+                     IsVisible="{Binding IsLoading}"
+                     Foreground="#FF6B35F5" Background="Transparent"
+                     Margin="0,0,0,4"/>
+      </DockPanel>
+    </Border>
+
+    <!-- ═══ MAIN CONTENT ════════════════════════════════════════════════ -->
+    <Grid Grid.Column="1" Grid.Row="0" Background="#FF0F0F14">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+
+      <!-- Top toolbar -->
+      <Border Grid.Row="0" Background="#FF12121C"
+              BorderBrush="#22FFFFFF" BorderThickness="0,0,0,1"
+              Padding="16,12">
+        <DockPanel>
+          <TextBlock DockPanel.Dock="Left" Text="播放列表"
+                     Foreground="White" FontSize="16" FontWeight="SemiBold"
+                     VerticalAlignment="Center"/>
+          <TextBlock DockPanel.Dock="Left"
+                     Text="{Binding Playlist.Count, StringFormat=' ({0})'}"
+                     Foreground="#66AAAACC" FontSize="14" VerticalAlignment="Center"/>
+          <TextBox DockPanel.Dock="Right" Classes="search"
+                   Text="{Binding SearchText}"
+                   Watermark="🔍 搜索歌曲、艺术家..."
+                   Width="220"/>
+        </DockPanel>
+      </Border>
+
+      <!-- Playlist -->
+      <ListBox Grid.Row="1" Name="TrackListBox"
+               ItemsSource="{Binding FilteredPlaylist}"
+               SelectedIndex="{Binding SelectedIndex}"
+               Background="Transparent"
+               BorderThickness="0"
+               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+               Padding="8,4">
+        <ListBox.ItemTemplate>
+          <DataTemplate x:DataType="models:MusicTrack">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,2">
+              <!-- Index / playing indicator -->
+              <Border Grid.Column="0" Width="32" VerticalAlignment="Center">
+                <TextBlock Text="▶" FontSize="11" Foreground="#FF6B35F5"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              </Border>
+              <!-- Title + Artist -->
+              <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="{Binding Title}" Foreground="White"
+                           FontSize="13" FontWeight="Medium"
+                           TextTrimming="CharacterEllipsis"/>
+                <TextBlock FontSize="11" Foreground="#88AAAACC"
+                           TextTrimming="CharacterEllipsis">
+                  <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0} · {1}">
+                      <Binding Path="Artist"/>
+                      <Binding Path="Album"/>
+                    </MultiBinding>
+                  </TextBlock.Text>
+                </TextBlock>
+              </StackPanel>
+              <!-- Duration -->
+              <TextBlock Grid.Column="2" Text="{Binding DurationText}"
+                         Foreground="#66AAAACC" FontSize="12"
+                         VerticalAlignment="Center" Margin="8,0"/>
+              <!-- Remove button -->
+              <Button Grid.Column="3" Name="RemoveTrackBtn"
+                      Tag="{Binding}"
+                      Classes="icon" Padding="6,4" FontSize="13"
+                      Foreground="#44AAAACC"
+                      ToolTip.Tip="移除">✕</Button>
+            </Grid>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Grid>
+
+    <!-- ═══ PLAYER BAR ══════════════════════════════════════════════════ -->
+    <Border Grid.Column="1" Grid.Row="1"
+            Background="#FF16161F"
+            BorderBrush="#22FFFFFF" BorderThickness="0,1,0,0"
+            Padding="24,12,24,16">
+      <Grid RowDefinitions="Auto,Auto">
+
+        <!-- Progress -->
+        <Grid Grid.Row="0" ColumnDefinitions="48,*,48" Margin="0,0,0,4">
+          <TextBlock Grid.Column="0" Text="{Binding PositionText}"
+                     Foreground="#88AAAACC" FontSize="11"
+                     VerticalAlignment="Center" HorizontalAlignment="Left"/>
+          <Slider Grid.Column="1" Name="ProgressSlider"
+                  Minimum="0" Maximum="{Binding Duration}"
+                  Value="{Binding Position}"
+                  Margin="8,0"/>
+          <TextBlock Grid.Column="2" Text="{Binding DurationText}"
+                     Foreground="#88AAAACC" FontSize="11"
+                     VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        </Grid>
+
+        <!-- Controls -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto,*">
+
+          <!-- Volume -->
+          <StackPanel Grid.Column="0" Orientation="Horizontal"
+                      Spacing="6" VerticalAlignment="Center">
+            <TextBlock Text="🔊" Foreground="#88AAAACC" FontSize="16"
+                       VerticalAlignment="Center"/>
+            <Slider Minimum="0" Maximum="1"
+                    Value="{Binding Volume}"
+                    Width="100" VerticalAlignment="Center"/>
+            <TextBlock Foreground="#66AAAACC" FontSize="11" VerticalAlignment="Center"
+                       Text="{Binding Volume, StringFormat={}{0:P0}}"/>
+          </StackPanel>
+
+          <!-- Playback controls -->
+          <StackPanel Grid.Column="1" Orientation="Horizontal"
+                      Spacing="4" HorizontalAlignment="Center"
+                      VerticalAlignment="Center">
+            <Button Name="PrevBtn" Classes="icon" FontSize="20"
+                    ToolTip.Tip="上一首">⏮</Button>
+            <Button Name="PlayPauseBtn" Classes="play"
+                    Content="{Binding PlayPauseIcon}"
+                    ToolTip.Tip="播放/暂停"/>
+            <Button Name="NextBtn" Classes="icon" FontSize="20"
+                    ToolTip.Tip="下一首">⏭</Button>
+          </StackPanel>
+
+          <!-- Play mode -->
+          <StackPanel Grid.Column="2" Orientation="Horizontal"
+                      Spacing="4" HorizontalAlignment="Right"
+                      VerticalAlignment="Center">
+            <Button Name="PlayModeBtn" Classes="icon" FontSize="20"
+                    Content="{Binding PlayModeIcon}"
+                    ToolTip.Tip="{Binding PlayModeToolTip}"/>
+          </StackPanel>
+        </Grid>
+      </Grid>
+    </Border>
+
+  </Grid>
+</Window>
